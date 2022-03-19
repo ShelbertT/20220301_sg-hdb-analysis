@@ -1,6 +1,6 @@
 import copy
 from visualization import *
-from dataProcessing import *
+from rawProcessing import *
 from getConvexHull import *
 from geoAnalysis import *
 
@@ -40,9 +40,9 @@ def get_shape_length(polygon):
 
 # list[list[x, y]], double -> double | Calculate the surface area of a building. All units in meters
 def get_surface_area(polygon, height):
-    roof_area = get_shape_area(polygon)
+    # roof_area = get_shape_area(polygon)
     shape_length = get_shape_length(polygon)
-    surface_area = roof_area + height * shape_length
+    surface_area = height * shape_length
     return surface_area
 
 

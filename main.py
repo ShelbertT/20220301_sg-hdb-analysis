@@ -7,16 +7,17 @@
 
 import copy
 from visualization import *
-from dataProcessing import *
+from rawProcessing import *
 from getConvexHull import *
 from geoAnalysis import *
 import math
 
 
 def main():
-    data = read_json('data/hdb_struct.geojson')
-    data1 = copy.deepcopy(data)  # Because the following function will modify the original data
-    test = generate_convex_hull_geojson(data1)
+    data = read_json('data/hdb_carbon.geojson')
+    write_json(data)
+    # data1 = copy.deepcopy(data)  # Because the following function will modify the original data
+    # test = generate_convex_hull_geojson(data1)
 
 
 if __name__ == '__main__':
