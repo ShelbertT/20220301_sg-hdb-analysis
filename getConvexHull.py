@@ -3,10 +3,19 @@ from rawProcessing import *
 from main import *
 from geoAnalysis import *
 import math
+from decimal import Decimal
+
+
+# def transform_precision(vertices):
+#     for i in range(len(vertices)):
+#         for j in range(len(vertices[i])):
+#             vertices[i][j] = double(vertices[i][j])
+#
+#     return vertices
 
 
 def generate_vector(start, end):
-    vector = [end[0]-start[0], end[1]-start[1]]
+    vector = [float(Decimal(f'{end[0]}')-Decimal(f'{start[0]}')), float(Decimal(f'{end[1]}')-Decimal(f'{start[1]}'))]
     return vector
 
 
@@ -23,7 +32,7 @@ def get_vector_angle(vector1, vector2):
 def whether_left(start, middle, end):
     vector1 = generate_vector(start, middle)
     vector2 = generate_vector(middle, end)
-    cross_product_value = vector1[0] * vector2[1] - vector1[1] * vector2[0]
+    cross_product_value = Decimal(f'{vector1[0]}') * Decimal(f'{vector2[1]}') - Decimal(f'{vector1[1]}') * Decimal(f'{vector2[0]}')
 
     if cross_product_value > 0:
         return False
@@ -34,12 +43,33 @@ def whether_left(start, middle, end):
 # geojson -> geojson | Extract the convex hull of HDBs in each street. NOTE: this function modifies the original data because of shallow copy
 def generate_convex_hull_geojson(geojson):
     precinct = extract_precinct(geojson)
+
     for feature in precinct["features"]:
         polygons = feature["geometry"]["coordinates"]
         vertices = extract_all_vertices(polygons)
         convex_hull = get_convex_hull(vertices)
 
         feature["geometry"]["coordinates"] = [convex_hull]
+
+    precinct_converted = convert_coordinate(copy.deepcopy(precinct))
+
+    threshold = 450000
+    feature_num = len(precinct['features'])
+
+    for i in range(feature_num):
+        index = feature_num - 1 - i
+
+        polygon = precinct_converted['features'][index]['geometry']['coordinates'][0]
+        area = get_shape_area(polygon)
+        # print(area)
+        if area > threshold:
+            precinct['features'].pop(index)
+    remaining_precinct = len(precinct['features'])
+
+    print(f'Filtering completed. All precincts bigger than {threshold / 1000000} km^2 are removed.\n'
+          f'Before: {feature_num} precincts.\n'
+          f'After: {remaining_precinct} precincts.')
+
     return precinct
 
 
@@ -71,10 +101,8 @@ def get_convex_hull(vertices):
 
     # Traverse all the remaining points to generate convex hull
     convex_hull = [origin, polar_sequence.pop(0)]
-    # first = origin
-    # second = polar_sequence.pop(0)
-    # third = polar_sequence.pop(1)
-    for i in range(len(polar_sequence)):
+
+    while len(polar_sequence) > 0:
         left = whether_left(convex_hull[-2], convex_hull[-1], polar_sequence[0])
         if left:
             convex_hull.pop(-1)
@@ -84,14 +112,5 @@ def get_convex_hull(vertices):
     return convex_hull
 
 
-# def render_specific_precinct():
-
-
-
 if __name__ == '__main__':
-    data = read_json('data/hdb_struct.geojson')
-    data1 = copy.deepcopy(data)  # Because the following function will modify the original data
-
-    test = generate_convex_hull_geojson(data1)
-    show_map(test)
-    show_map(data)
+    main()

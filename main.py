@@ -14,11 +14,21 @@ import math
 
 
 def main():
-    data = read_json('data/hdb_carbon.geojson')
-    write_json(data)
-    # data1 = copy.deepcopy(data)  # Because the following function will modify the original data
-    # test = generate_convex_hull_geojson(data1)
+    original_data = read_json('data/hdb_carbon.geojson')
+    data = copy.deepcopy(original_data)  # Because the following function will modify the original data
+
+    convex_hull = generate_convex_hull_geojson(data)
+    show_map(convex_hull)
+
+
+def test():
+    res = read_json('smalltest.geojson')
+    # show_map(res)
+
+    res1 = generate_convex_hull_geojson(res)
+    show_map(res1)
 
 
 if __name__ == '__main__':
+    # test()
     main()
