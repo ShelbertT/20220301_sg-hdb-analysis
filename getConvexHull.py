@@ -58,10 +58,8 @@ def generate_convex_hull_geojson(geojson):
 
     for i in range(feature_num):
         index = feature_num - 1 - i
-
         polygon = precinct_converted['features'][index]['geometry']['coordinates'][0]
         area = get_shape_area(polygon)
-        # print(area)
         if area > threshold:
             precinct['features'].pop(index)
     remaining_precinct = len(precinct['features'])

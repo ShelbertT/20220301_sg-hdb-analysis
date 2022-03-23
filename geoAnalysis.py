@@ -53,11 +53,11 @@ def extract_precinct(geojson):
 
     for feature in geojson['features']:
         street_name = feature["properties"]["HDB_cleaning.hdb_street"]
-        feature_name = street_name.replace(" ", "_").replace('\'', '')
-        # print(feature_name)
+        feature_name = street_name.replace(" ", "_").replace('\'', '')  # ID cannot contain '\'', so it has to be different from street_name
+
         if feature_name not in all_new_feature_names:
             properties = Properties(hdb_street=street_name)  # Creat an instance
-            exec(f'{feature_name} = Feature(polygons=feature["geometry"]["coordinates"], feature_id=street_name, properties=properties.all)')  # Creat an instance using the street_name as new_feature_name
+            exec(f'{feature_name} = Feature(polygons=feature["geometry"]["coordinates"], feature_id=feature_name, properties=properties.all)')  # Creat an instance using the street_name as new_feature_name
             all_new_feature_names.append(feature_name)
 
         elif feature_name in all_new_feature_names:

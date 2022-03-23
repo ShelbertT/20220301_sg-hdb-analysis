@@ -71,7 +71,7 @@ def read_json(input_path):
     with open(input_path, encoding='utf-8') as f:
         resp = json.load(f)
 
-    reclassification(resp)
+    reclassification(resp)  # Unify the data format, put all polygons in one list.
     return resp
 
 
@@ -129,6 +129,7 @@ def reclassification(geojson):
         all_polygons = get_polygons_in_feature(temp)
         geojson['features'][i]['geometry']['coordinates'] = all_polygons
         geojson['features'][i]['geometry']['type'] = 'Polygon'
+
     check_level(geojson)
 
 
@@ -148,7 +149,7 @@ def get_polygons_in_feature(feature_coordinates):
 
 def check_level(geojson):
     flag = True  # 依然是True说明转换成功
-    for i in range(8000):
+    for i in range(len(geojson['features'])):
         try:
             len(geojson['features'][i]['geometry']['coordinates'][0][0][0])
             flag = False
@@ -156,9 +157,9 @@ def check_level(geojson):
             continue
 
     if flag:
-        print('Processed')
+        print('Processed, no multi-layer polygons anymore.')
     else:
-        print('Raw')
+        print('Raw, meaning still have multi-layer organization of polygons.')
 
 
 if __name__ == '__main__':
