@@ -11,6 +11,7 @@ from rawProcessing import *
 from getConvexHull import *
 from geoAnalysis import *
 import math
+import getpass
 
 
 def assign_value(origin, convex_hull):
@@ -91,23 +92,60 @@ def assign_value(origin, convex_hull):
     return convex_hull
 
 
-def main():
-    original_data = read_json('data/hdb_carbon.geojson')
+def main(threshold=450000):
+    original_data = read_json(origin)
+
     # Using deepcopy Because the following function will modify the original data, and wee need the original data later.
-    convex_hull = generate_convex_hull_geojson(copy.deepcopy(original_data))
+    convex_hull = generate_convex_hull_geojson(copy.deepcopy(original_data), threshold)
+    write_json(convex_hull, convex)
 
     return assign_value(original_data, convex_hull)
 
 
-def test():
-    res = read_json('smalltest.geojson')
-    # show_map(res)
-
-    res1 = generate_convex_hull_geojson(res)
-    show_map(res1)
-
-
 if __name__ == '__main__':
-    final_result = main()
-    # show_map(final_result)
-    write_json(final_result, 'convex_hull_v1.geojson')
+    origin = 'data/hdb_carbon.geojson'
+    convex = 'output/convex_hull.geojson'
+
+    username = getpass.getuser()
+
+    passcode = False
+    print(f'Welcome, {username}. How\'s your day?')
+    print('-------------------------------------------')
+    print('[Actions Supported] \n'
+          'generate: threshold is needed \n'
+          'showmap: geojson is needed \n'
+          'exit: exit the program\n')
+
+    while not passcode:
+        command = input('Input Command: ')
+        command = command.split()  # 在这里command变成了列表
+        if len(command) == 1:
+            act = command[0]
+            param = None
+        elif len(command) == 2:
+            act = command[0]
+            try:
+                param = int(command[1])
+            except:
+                param = command[1]
+        else:
+            print('[Warning] Wrong input format\n')
+            continue
+
+        if act == 'generate':
+            main(param)
+            print(f'[DONE] A convex hull using {param} as threshold is generated. You can find it here: {convex}.')
+        elif act == 'showmap':
+            if param == 'origin':
+                map_shown = read_json(origin)
+                print('[DONE] Original data is shown.')
+            elif param == 'convex':
+                map_shown = read_json(convex)
+                print('[DONE] Convex hull is shown.')
+            show_map(map_shown)
+        elif act == 'exit':
+            passcode = True
+        else:
+            print('[Warning] Wrong input format\n')
+            continue
+        print('\n')

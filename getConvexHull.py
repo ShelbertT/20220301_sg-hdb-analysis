@@ -6,14 +6,6 @@ import math
 from decimal import Decimal
 
 
-# def transform_precision(vertices):
-#     for i in range(len(vertices)):
-#         for j in range(len(vertices[i])):
-#             vertices[i][j] = double(vertices[i][j])
-#
-#     return vertices
-
-
 def generate_vector(start, end):
     vector = [float(Decimal(f'{end[0]}')-Decimal(f'{start[0]}')), float(Decimal(f'{end[1]}')-Decimal(f'{start[1]}'))]
     return vector
@@ -41,7 +33,7 @@ def whether_left(start, middle, end):
 
 
 # geojson -> geojson | Extract the convex hull of HDBs in each street. NOTE: this function modifies the original data because of shallow copy
-def generate_convex_hull_geojson(geojson):
+def generate_convex_hull_geojson(geojson, threshold=450000):
     precinct = extract_precinct(geojson)
 
     for feature in precinct["features"]:
@@ -53,7 +45,6 @@ def generate_convex_hull_geojson(geojson):
 
     precinct_converted = convert_coordinate(copy.deepcopy(precinct))
 
-    threshold = 450000
     feature_num = len(precinct['features'])
 
     for i in range(feature_num):
