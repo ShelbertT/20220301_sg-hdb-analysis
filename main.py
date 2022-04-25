@@ -113,7 +113,7 @@ if __name__ == '__main__':
     print('-------------------------------------------')
     print('[Actions Supported] \n'
           'generate: threshold is needed \n'
-          'showmap: geojson is needed \n'
+          'showmap: geojson is needed (origin / convex) \n'
           'exit: exit the program\n')
 
     while not passcode:
